@@ -17,9 +17,9 @@ const Part = (props) => {
 const Content = (props) => {
   return(
     <>
-    {props.parts.map(part => 
-      <Part name={part.name} exercises={part.exercises}/>
-    )}
+    {props.parts.map((part, i = 0) =>  {
+     return <Part key={i++} name={part.name} exercises={part.exercises}/>
+    })}
     </>
   )
 }
