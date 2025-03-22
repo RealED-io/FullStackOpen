@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import Contacts from './components/Contacts'
+import FilterPrompt from './components/FilterPrompt'
+import ContactForm from './components/ContactForm'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -10,19 +13,7 @@ const App = () => {
   
   const [filter, setFilter] = useState('')
 
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
-
-  const handleNewName = (event) => {
-    setNewName(event.target.value)
-  }
-
-  const handleNewNumber = (event) => {
-    setNewNumber(event.target.value)
-  }
-
-  const handleAddContact = (event) => {
-    event.preventDefault()
+  const handleAddContact = (newName, newNumber) => {
     const findPerson = persons.find(p => p.name === newName)
     // Case if person is already at the contacts
     if(findPerson) {
@@ -31,36 +22,18 @@ const App = () => {
     else {
       setPersons(persons.concat({name: newName, number: newNumber}))
     }
-
   }
-
-  const filteredPersons = persons.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()))
 
   return (
     <div>
       <h2>Phonebook</h2>
       <FilterPrompt onChange={(event) => setFilter(event.target.value)}/>
       <h2>add a new</h2>
-      <form onSubmit={handleAddContact}>
-        <p style={{margin: 0}}>name: <input value={newName} onChange={handleNewName}/></p>
-        <p style={{margin: 0}}>number: <input value={newNumber} onChange={handleNewNumber}/></p>
-        <button type="submit">add</button>
-      </form>
+      <ContactForm handleAddContact={handleAddContact}/>
       <h2>Numbers</h2>
-      <Contacts persons={filteredPersons}/>
+      <Contacts persons={persons} filter={filter}/>
     </div>
   )
 }
-
-const Contacts = ({persons}) => 
-  <div>
-    {persons.map(person => <p key={person.name} style={{margin: 0}}>{person.name} {person.number}</p>)}
-  </div>
-
-const FilterPrompt = ({onChange}) => 
-  <div>
-    filter shown with <input onChange={onChange}></input>
-  </div>
-
 
 export default App
