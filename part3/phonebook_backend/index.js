@@ -1,11 +1,14 @@
 const express = require('express')
-const app = express()
+const morgan = require('morgan')
 
+const app = express()
 app.use(express.json())
+
+morgan.token('body', req => req.method === 'POST' ? JSON.stringify(req.body) : null)
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let persons = [
     {
-        "id": "1",
         "name": "Arto Hellas",
         "number": "040-123456"
     },
@@ -27,44 +30,44 @@ let persons = [
 ]
 
 
-app.get('/', (request, response) => {
-    response.send('<h1>Hello World</h1>')
+app.get('/', (req, res) => {
+    res.send('<h1>Hello World</h1>')
 })
 
-app.get('/api/persons', (request, response) => {
-    response.json(persons)
+app.get('/api/persons', (req, res) => {
+    res.json(persons)
 })
 
-app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
+app.get('/api/persons/:id', (req, res) => {
+    const id = req.params.id
     const person = persons.find(p => p.id === id)
     if (person) {
-        response.json(person)
+        res.json(person)
     } else {
-        response.status(404).end()
+        res.status(404).end()
     }
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (req, res) => {
     const qty = persons.length
-    response.send(
+    res.send(
         `<p>Phonebook has info for ${qty} people </p>
         <p>${new Date()}</p>`
     )
 })
 
-app.post('/api/persons', (request, response) => {
-    const person = request.body
+app.post('/api/persons', (req, res) => {
+    const person = req.body
 
     if (!person || !person.name || !person.number) {
-        response.status(400).json({
+        res.status(400).json({
             error: 'content missing'
         })
         return
     }
 
     if (persons.find(p => p.name.toLowerCase() === person.name.toLowerCase())) {
-        response.status(400).json({
+        res.status(400).json({
             error: `${person.name} already exist`
         })
         return
@@ -73,14 +76,13 @@ app.post('/api/persons', (request, response) => {
     const id = Math.floor(Math.random() * 1_000_000).toString()
     person.id = id
     persons.push(person)
-    response.json(persons.find(p => p.id === id))
-    console.log(persons)
+    res.json(persons.find(p => p.id === id))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    const id = request.params.id
+app.delete('/api/persons/:id', (req, res) => {
+    const id = req.params.id
     persons = persons.filter(p => p.id !== id)
-    response.status(204).end()
+    res.status(204).end()
 })
 
 const PORT = 3001
