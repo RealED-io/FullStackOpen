@@ -36,6 +36,9 @@ const App = () => {
     else {
       personService.create({name: newName, number: newNumber})
         .then(p => setPersons(persons.concat(p)))
+        .catch(() => {
+          notification(`${newName} not added`, 'red')
+        })
       notification(`Added ${newName}`, 'green')
     }
   }
