@@ -14,6 +14,7 @@ const App = () => {
 
   useEffect(() => {
     personService.getAll().then(p => setPersons(p))
+    document.title = "FullStackOpen - Phonebook"
   }, [])
 
   const handleAddContact = (newName, newNumber) => {
