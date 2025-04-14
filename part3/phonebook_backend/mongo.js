@@ -1,3 +1,4 @@
+require('dotenv').config()
 const mongoose = require('mongoose')
 
 if (process.argv.length < 3) {
@@ -5,9 +6,7 @@ if (process.argv.length < 3) {
   process.exit(1)
 }
 
-const password = process.argv[2]
-
-const url = `mongodb+srv://edrealuyo:${password}@cluster0.w9omci2.mongodb.net/PhonebookApp?retryWrites=true&w=majority&appName=Cluster0`
+const url = process.env.MONGODB_URI
 
 mongoose.set('strictQuery',false)
 
@@ -18,6 +17,14 @@ const personSchema = new mongoose.Schema({
   number: String,
 })
 
+personSchema.set('toObject', {
+    transform: (_, res) => {
+        res.id = res._id.toString()
+        delete res._id
+        delete res.__v
+    },
+})
+
 const Person = mongoose.model('Person', personSchema)
 
 if (process.argv.length == 3) {
@@ -25,7 +32,8 @@ if (process.argv.length == 3) {
         .then(res => {
             console.log('phonebook:')
             res.forEach(p => {
-                console.log(p.name, p.number)
+                console.log(p)
+                // console.log(p.name, p.number)
             })
             mongoose.connection.close()
         }) 
