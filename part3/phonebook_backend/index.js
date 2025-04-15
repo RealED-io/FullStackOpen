@@ -12,7 +12,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 app.get('/api/persons', (req, res, next) => {
     Person.find({})
         .then(persons => res.json(persons))
-.catch(err => next(err))
+        .catch(err => next(err))
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -23,13 +23,13 @@ app.get('/api/persons/:id', (req, res, next) => {
 })
 
 app.get('/info', (req, res, next) => {
-    Person.countDocuments({}, { hint: "_id_"})
+    Person.countDocuments({}, { hint: '_id_' })
         .then(qty => res.send(
             `<p>Phonebook has info for ${qty} people </p>
             <p>${new Date()}</p>`
         )
-        .catch(err => next(err))
-    )
+            .catch(err => next(err))
+        )
 })
 
 app.post('/api/persons', (req, res, next) => {
@@ -41,19 +41,19 @@ app.post('/api/persons', (req, res, next) => {
         })
     }
 
-    Person.findOne({ name : person.name })
-        .then(p => p ? 
-            res.status(400).json({error: `${p.name} already exist`}) :
+    Person.findOne({ name: person.name })
+        .then(p => p ?
+            res.status(400).json({ error: `${p.name} already exist` }) :
             person.save()
                 .then(newPerson => res.json(newPerson))
                 .catch(err => next(err))
-            )
+        )
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
     const id = req.params.id
-    const {name, number} = req.body
-    
+    const { name, number } = req.body
+
     Person.findById(id)
         .then(person => {
             if (!person) {
