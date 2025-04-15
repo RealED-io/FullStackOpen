@@ -56,7 +56,6 @@ app.put('/api/persons/:id', (req, res, next) => {
     
     Person.findById(id)
         .then(person => {
-            console.log(person)
             if (!person) {
                 return res.status(404).end()
             }
@@ -77,12 +76,14 @@ app.delete('/api/persons/:id', (req, res, next) => {
 })
 
 const errorHandler = (err, req, res, next) => {
-    console.error(err)
-
     if (err.name === 'CastError') {
         return res.status(400).send({ error: 'malformatted id' })
     }
+    if (err.name === 'ValidationError') {
+        return res.status(400).send({ error: err.message })
+    }
 
+    console.error(err)
     next(err)
 }
 

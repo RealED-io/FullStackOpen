@@ -34,16 +34,18 @@ const App = () => {
           personService.getAll().then(p => setPersons(p))
         })
       }
-      
     }
     // Case if person is already at the contacts
     else {
       personService.create({name: newName, number: newNumber})
-        .then(p => setPersons(persons.concat(p)))
-        .catch(() => {
-          notification(`${newName} not added`, 'red')
+        .then(p => {
+          setPersons(persons.concat(p))
+          notification(`Added ${newName}`, 'green')
         })
-      notification(`Added ${newName}`, 'green')
+        .catch((err) => {
+          // notification(`${newName} not added`, 'red')
+          notification(err.response.data.error, 'red')
+        })
     }
   }
 
