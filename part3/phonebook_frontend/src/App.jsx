@@ -24,12 +24,15 @@ const App = () => {
       const confirm = window.confirm(`${findPerson.name} is already added to phonebook, replace the old number with a new one?`)
       if (confirm) {
         personService.update(findPerson.id, {name: newName, number: newNumber})
-        .then(updated => setPersons(persons.map(p => p.id === updated.id ? updated : p)))
-        // Catch is 'almost' impossible to reach but attached for completion
+        .then(updated => {
+          setPersons(persons.map(p => p.id === updated.id ? updated : p))
+          notification(`${updated.name} number changed to ${updated.number}`, 'green')
+        })
         .catch(() => {
           notification(`Information of ${newName} has already been removed from server`, 'red')
+          // Refreshes the data
+          personService.getAll().then(p => setPersons(p))
         })
-        notification(`${newName} number changed to ${newNumber}`, 'green')
       }
       
     }
@@ -56,7 +59,7 @@ const App = () => {
     const confirm = window.confirm(`Delete ${persons.find(p => p.id === id).name}`)
     if(confirm) {
       personService.remove(id)
-      .then(setPersons(persons.filter(p => p.id !== id)))
+        .then(setPersons(persons.filter(p => p.id !== id)))
     }
   }
 
