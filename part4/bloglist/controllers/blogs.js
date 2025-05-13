@@ -24,7 +24,7 @@ blogsRouter.post('/', async (req, res, next) => {
     try {
         const blog = new Blog(req.body)
 
-        if (!blog.title || blog.title === "" || !blog.url || blog.url === "") {
+        if (!blog.title || blog.title === '' || !blog.url || blog.url === '') {
             res.status(400).end()
         }
         const result = await blog.save()
@@ -32,7 +32,26 @@ blogsRouter.post('/', async (req, res, next) => {
     } catch (e) {
         next(e)
     }
+})
 
+blogsRouter.delete('/:id', async (req, res, next) => {
+    try {
+        const id = req.params.id
+        await Blog.findByIdAndDelete(id)
+        res.status(204).end()
+    } catch (e) {
+        next(e)
+    }
+})
+
+blogsRouter.put('/:id', async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const blog = await Blog.findByIdAndUpdate(id, req.body, { new: true })
+        res.status(200).json(blog)
+    } catch (e) {
+        next(e)
+    }
 })
 
 module.exports = blogsRouter

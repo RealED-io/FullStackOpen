@@ -9,52 +9,60 @@ const api = supertest(app)
 
 const initialBlogs = [
     {
-        title: "React patterns",
-        author: "Michael Chan",
-        url: "https://reactpatterns.com/",
+        title: 'React patterns',
+        author: 'Michael Chan',
+        url: 'https://reactpatterns.com/',
         likes: 7,
         __v: 0
     },
     {
-        title: "Go To Statement Considered Harmful",
-        author: "Edsger W. Dijkstra",
-        url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+        title: 'Go To Statement Considered Harmful',
+        author: 'Edsger W. Dijkstra',
+        url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
         likes: 5,
         __v: 0
     },
     {
-        title: "Canonical string reduction",
-        author: "Edsger W. Dijkstra",
-        url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+        title: 'Canonical string reduction',
+        author: 'Edsger W. Dijkstra',
+        url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
         likes: 12,
         __v: 0
     },
     {
-        title: "First class tests",
-        author: "Robert C. Martin",
-        url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
+        title: 'First class tests',
+        author: 'Robert C. Martin',
+        url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
         likes: 10,
         __v: 0
     },
     {
-        title: "TDD harms architecture",
-        author: "Robert C. Martin",
-        url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+        title: 'TDD harms architecture',
+        author: 'Robert C. Martin',
+        url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
         likes: 0,
         __v: 0
     },
     {
-        title: "Type wars",
-        author: "Robert C. Martin",
-        url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+        title: 'Type wars',
+        author: 'Robert C. Martin',
+        url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
         likes: 2,
         __v: 0
     }
 ]
 
+const newBlog = {
+    title: 'A',
+    author: 'B',
+    url: 'C',
+    likes: 4,
+}
+
 beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(initialBlogs)
+
 })
 
 test('dummy test "1!=2"', () => {
@@ -84,48 +92,61 @@ describe('GET blogs', () => {
 })
 
 describe('POST blogs', () => {
-    const newBlog = {
-        title: "A",
-        author: "B",
-        url: "C",
-        likes: 4,
-    }
-
     test('adding 1 post increases length/count by 1', async () => {
         await api
-                .post('/api/blogs')
-                .send(newBlog)
+            .post('/api/blogs')
+            .send(newBlog)
         const res = await api.get('/api/blogs')
         assert.equal(res.body.length, initialBlogs.length + 1)
     })
 
     const newBlogWithoutLike = {
-        title: "D",
-        author: "E",
-        url: "F"
+        title: 'D',
+        author: 'E',
+        url: 'F'
     }
 
     test('adding a post without like defaults to 0 likes', async () => {
         const { body: { id } } = await api
-                .post('/api/blogs')
-                .send(newBlogWithoutLike)
+            .post('/api/blogs')
+            .send(newBlogWithoutLike)
         const res = await api.get(`/api/blogs/${id}`)
         assert.equal(res.body.likes, 0)
     })
 
     const newBrokenBlog = {
-        author: "G",
-        url: "H"
+        author: 'G',
+        url: 'H'
     }
 
     test('adding a post without title responds to 400', async () => {
         await api
-                .post('/api/blogs')
-                .send(newBrokenBlog)
-                .expect(400)
+            .post('/api/blogs')
+            .send(newBrokenBlog)
+            .expect(400)
     })
+})
 
+describe('DELETE blogs', () => {
+    test('Delete 1 blog decreases length/count by 1', async () => {
+        const res = await api.get('/api/blogs')
+        const id = res.body[0].id
+        await api.delete(`/api/blogs/${id}`)
+        const res2 = await api.get('/api/blogs')
+        assert.equal(res2.body.length, res.body.length - 1)
+    })
+})
 
+describe('PUT blogs', () => {
+    test('update blogs likes', async () => {
+        const blogs = (await api.get('/api/blogs')).body
+        let blog = blogs[0]
+        blog.likes++
+        const newResponse = await api
+            .put(`/api/blogs/${blog.id}`)
+            .send(blog)
+        assert.equal(newResponse.body.likes, blog.likes)
+    })
 })
 
 after(async () => {
