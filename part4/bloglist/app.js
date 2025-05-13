@@ -15,4 +15,11 @@ app.use(express.json())
 // Routers
 app.use('/api/blogs', blogsRouter)
 
+const unknownEndpoint = (req, res) => {
+    res.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
+
 module.exports = app
