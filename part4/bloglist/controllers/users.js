@@ -11,9 +11,37 @@ usersRouter.get('/', async (request, response, next) => {
     }
 })
 
+usersRouter.get('/:id', async (request, response, next) => {
+    try {
+        const id = request.params.id
+        const user = await User.findById(id)
+        if (!user) {
+            return response.status(404).end()
+        }
+        response.json(user)
+    } catch (e) {
+        if (e.kind === 'ObjectId' && e.name === 'CastError') {
+            return response.status(404).end()
+        }
+        next(e)
+    }
+})
+
 usersRouter.post('/', async (request, response, next) => {
     try {
         const { username, name, password } = request.body
+
+        if (!username || !name || !password) {
+            return response.status(400).end()
+        }
+
+        if (username.length < 3) {
+            return response.status(400).json({ error: 'username must be at least 3 characters' })
+        }
+
+        if (password.length < 3) {
+            return response.status(400).json({ error: 'password must be at least 3 characters' })
+        }
 
         const saltRounds = 10
         const passwordHash = await bcrypt.hash(password, saltRounds)
