@@ -14,8 +14,14 @@ blogsRouter.get('/:id', async (req, res, next) => {
     try {
         const id = req.params.id
         const blog = await Blog.findById(id)
+        if (!blog) {
+            return res.status(404).end()
+        }
         res.json(blog)
     } catch (e) {
+        if (e.kind === 'ObjectId' && e.name === 'CastError') {
+            return res.status(404).end()
+        }
         next(e)
     }
 })
