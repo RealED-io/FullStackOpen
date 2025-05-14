@@ -46,6 +46,9 @@ blogsRouter.delete('/:id', async (req, res, next) => {
         await Blog.findByIdAndDelete(id)
         res.status(204).end()
     } catch (e) {
+        if (e.kind === 'ObjectId' && e.name === 'CastError') {
+            return res.status(404).end()
+        }
         next(e)
     }
 })
@@ -56,6 +59,9 @@ blogsRouter.put('/:id', async (req, res, next) => {
         const blog = await Blog.findByIdAndUpdate(id, req.body, { new: true })
         res.status(200).json(blog)
     } catch (e) {
+        if (e.kind === 'ObjectId' && e.name === 'CastError') {
+            return res.status(404).end()
+        }
         next(e)
     }
 })
