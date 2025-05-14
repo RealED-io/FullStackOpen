@@ -56,8 +56,6 @@ usersRouter.post('/', async (request, response, next) => {
 
         const savedUser = await user.save()
 
-        console.log(savedUser)
-
         response.status(201).json(savedUser)
     } catch (e) {
         next(e)
