@@ -26,6 +26,7 @@ const unknownEndpoint = (req, res) => {
 }
 
 app.use(unknownEndpoint)
+app.use(middlware.errorHandler)
 
 
 module.exports = app
