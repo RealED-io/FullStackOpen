@@ -3,7 +3,9 @@ const mongoose = require('mongoose')
 const userSchema = mongoose.Schema({
     username: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        minlength: 3,
     },
     name: {
         type: String,
@@ -11,8 +13,15 @@ const userSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        minlength: 3,
     },
+    blogs: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Blog',
+        }
+    ]
 })
 
 userSchema.set('toJSON', {
