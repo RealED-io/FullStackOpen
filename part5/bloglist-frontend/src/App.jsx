@@ -29,10 +29,8 @@ const App = () => {
     window.localStorage.setItem('user', JSON.stringify(user))
   }
 
-  return (
-    <div>
-      {!user ?
-        <LoginForm onLogin={handleLogin} /> :
+  if (user) {
+    return (
         <>
           <h2>blogs</h2>
           <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
@@ -40,10 +38,13 @@ const App = () => {
               <Blog key={blog.id} blog={blog} />
           )}
         </>
-      }
 
-    </div>
-  )
+    )
+  } else {
+    return (
+      <LoginForm onLogin={handleLogin} />
+    )
+  }
 }
 
 export default App
