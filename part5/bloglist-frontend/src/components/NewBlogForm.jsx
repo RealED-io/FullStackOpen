@@ -1,6 +1,6 @@
 import blogService from '../services/blogs'
 
-const NewBlogForm = ({token, onCreate}) => {
+const NewBlogForm = ({token, onCreate, onNotification}) => {
     const handleSubmit = async (event) => {
         event.preventDefault()
         const title = event.target.title.value
@@ -10,6 +10,7 @@ const NewBlogForm = ({token, onCreate}) => {
         try {
             const response = await blogService.create({title, author, url}, token)
             onCreate(response)
+            onNotification(`a new blog ${title} by ${author} added`)
         } catch (error) {
             console.log(error.message)
         }

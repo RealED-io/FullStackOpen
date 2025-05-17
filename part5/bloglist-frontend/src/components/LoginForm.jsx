@@ -1,7 +1,7 @@
 import axios from 'axios'
 import loginService from '../services/login'
 
-const LoginForm = ({onLogin}) => {
+const LoginForm = ({onLogin, onNotification}) => {
     const handleLogin = async (event) => {
         event.preventDefault()
         const username = event.target.username.value
@@ -13,13 +13,13 @@ const LoginForm = ({onLogin}) => {
                 onLogin(response)
             }
         } catch (error) {
+            onNotification('Wrong username or password')
             console.log(error.message)
         }
     }
     
     return(
         <div>
-            <h2>log in to application</h2>
             <form  onSubmit={handleLogin}>
                 <div>
                     <label htmlFor="username">username</label>
