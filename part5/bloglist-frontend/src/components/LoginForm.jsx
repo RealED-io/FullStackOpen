@@ -1,7 +1,7 @@
 import axios from 'axios'
 import loginService from '../services/login'
 
-const LoginForm = () => {
+const LoginForm = ({onLogin}) => {
     const handleLogin = async (event) => {
         event.preventDefault()
         const username = event.target.username.value
@@ -9,11 +9,14 @@ const LoginForm = () => {
 
         try {
             const response = await loginService.login({username, password})
-            console.log(response)
+            if (response.token) {
+                onLogin(response)
+            }
         } catch (error) {
             console.log(error.message)
         }
     }
+    
     return(
         <div>
             <h2>log in to application</h2>
