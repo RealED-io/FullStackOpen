@@ -32,12 +32,18 @@ const App = () => {
     window.localStorage.setItem('user', JSON.stringify(user))
   }
 
+  const handleAddBlog = (blog) => {
+    if (blog.title.length > 0 && blog.author.length > 0 && blog.url.length > 0) {
+      setBlogs(blogs.concat(blog))
+    }
+  }
+
   if (user) {
     return (
         <>
           <h2>blogs</h2>
           <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
-          <NewBlogForm/>
+          <NewBlogForm token={user.token} onCreate={handleAddBlog}/>
           <br/>
           {blogs.map(blog =>
               <Blog key={blog.id} blog={blog} />
