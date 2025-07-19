@@ -16,12 +16,13 @@ const App = () => {
     }
   }, [])
 
+  async function fetchBlogs() {
+    const blogs = await blogService.getAll()
+    blogs.sort((a, b) => b.likes - a.likes)
+    setBlogs(blogs)
+  }
+
   useEffect(() => {
-    async function fetchBlogs() {
-      const blogs = await blogService.getAll()
-      blogs.sort((a, b) => b.likes - a.likes)
-      setBlogs(blogs)
-    }
     fetchBlogs()
   }, [])
 
@@ -41,6 +42,19 @@ const App = () => {
     }
   }
 
+  const handleRemove = async (blog) => {
+    try {
+      if (window.confirm(`Remove blog "${blog.title}" by "${blog.author}"?`)) {
+        await blogService.remove(blog.id, user.token)
+        await fetchBlogs()
+        handleNotification(`"${blog.name}" by "${blog.author}" removed`)
+      }
+    } catch (error) {
+      console.log(error)
+      handleNotification(`Removing "${blog.name}" by "${blog.author}" failed.`)
+    }
+  }
+
   const handleNotification = (message) => {
     setNotification(message)
     setTimeout(() => {
@@ -56,7 +70,7 @@ const App = () => {
         <>
           <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
           <Togglable buttonLabel='Create New Blog'>
-            <NewBlogForm onCreate={handleAddBlog} onNotification={handleNotification} />
+            <NewBlogForm token={user.token} onCreate={handleAddBlog} onNotification={handleNotification} />
           </Togglable>
         </> :
         <Togglable buttonLabel="Login">
@@ -65,7 +79,7 @@ const App = () => {
       }
       <br />
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} username={user?.username} handleRemove={() => handleRemove(blog)}/>
       )}
     </>
   )
