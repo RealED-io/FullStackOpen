@@ -1,0 +1,10 @@
+{
+    "eslint.workingDirectories": [
+        "./client",
+        "./server"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "eslint.validate": ["javascript"]
+}

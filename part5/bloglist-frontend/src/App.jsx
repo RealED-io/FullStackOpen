@@ -1,8 +1,9 @@
-import {useState, useEffect, useRef} from 'react'
+import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
-import LoginForm from "./components/LoginForm.jsx";
-import NewBlogForm from "./components/NewBlogForm.jsx";
+import LoginForm from './components/LoginForm.jsx'
+import NewBlogForm from './components/NewBlogForm.jsx'
+import Togglable from './components/Togglable.jsx'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -15,7 +16,7 @@ const App = () => {
     }
   }, [])
 
-  useEffect( () => {
+  useEffect(() => {
     async function fetchBlogs() {
       const blogs = await blogService.getAll()
       setBlogs(blogs)
@@ -42,33 +43,31 @@ const App = () => {
   const handleNotification = (message) => {
     setNotification(message)
     setTimeout(() => {
-      setNotification(null)
+      setNotification('')
     }, 5000)
   }
 
-  if (user) {
-    return (
+  return (
+    <>
+      <h2>blogs</h2>
+      {notification ? <p>{notification}</p> : null}
+      {user ?
         <>
-          <h2>blogs</h2>
-          {notification? <p>{notification}</p> : null}
           <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
-          <NewBlogForm token={user.token} onCreate={handleAddBlog} onNotification={handleNotification}/>
-          <br/>
-          {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} />
-          )}
-        </>
-
-    )
-  } else {
-    return (
-        <>
-          <h2>log in to application</h2>
-          {notification? <p>{notification}</p> : null}
+          <Togglable buttonLabel='Create New Blog'>
+            <NewBlogForm onCreate={handleAddBlog} onNotification={handleNotification} />
+          </Togglable>
+        </> :
+        <Togglable buttonLabel="Login">
           <LoginForm onLogin={handleLogin} onNotification={handleNotification} />
-        </>
-    )
-  }
+        </Togglable>
+      }
+      <br />
+      {blogs.map(blog =>
+        <Blog key={blog.id} blog={blog} />
+      )}
+    </>
+  )
 }
 
 export default App
