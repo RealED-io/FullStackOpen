@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import BlogService from '../services/blogs'
 
-const Blog = ({ blog, username, handleRemove }) => {
+const Blog = ({ blog, username, handleLike, handleRemove }) => {
   const [visibility, setVisibility] = useState(false)
   const [likes, setLikes] = useState(blog.likes)
 
@@ -17,23 +17,23 @@ const Blog = ({ blog, username, handleRemove }) => {
     setVisibility(visibility => !visibility)
   }
 
-  const handleLike = (id) => {
-    BlogService.like(id)
+  const internalHandleLike = (id) => {
+    handleLike(id)
     setLikes(likes + 1)
   }
 
   return (
     <div style={blogStyle} className='blog'>
       <p>
-        {blog.title} {blog.author} <button onClick={handleVisibility}>{visibility ? 'hide' : 'show'}</button>
+        {blog.title} {blog.author} <button data-testid="showBtn" onClick={handleVisibility}>{visibility ? 'hide' : 'show'}</button>
       </p>
       {visibility &&
         <>
           <p>{blog.url}</p>
-          <p>likes {likes} <button onClick={() => handleLike(blog.id)}>like</button></p>
+          <p>likes {likes} <button data-testid="likeBtn" onClick={() => internalHandleLike(blog.id)}>like</button></p>
           <p>{blog.user?.name ?? 'Anonymous'}</p>
           {username && username === blog.user?.username &&
-          <button onClick={handleRemove}>remove</button>}
+            <button onClick={handleRemove}>remove</button>}
         </>
       }
     </div>
