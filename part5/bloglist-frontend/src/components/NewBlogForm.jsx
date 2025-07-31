@@ -1,19 +1,12 @@
-import blogService from '../services/blogs'
-
-const NewBlogForm = ({ token, onCreate, onNotification }) => {
+const NewBlogForm = ({ onCreate }) => {
   const handleSubmit = async (event) => {
     event.preventDefault()
-    const title = event.target.title.value
-    const author = event.target.author.value
-    const url = event.target.url.value
-
-    try {
-      const response = await blogService.create({ title, author, url }, token)
-      onCreate(response)
-      onNotification(`a new blog ${title} by ${author} added`)
-    } catch (error) {
-      console.log(error.message)
+    const blog = {
+      title: event.target.title.value,
+      author: event.target.author.value,
+      url: event.target.url.value,
     }
+    onCreate(blog)
   }
 
   return(

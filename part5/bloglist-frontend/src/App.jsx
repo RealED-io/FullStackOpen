@@ -36,9 +36,15 @@ const App = () => {
     window.localStorage.setItem('user', JSON.stringify(user))
   }
 
-  const handleAddBlog = (blog) => {
+  const handleAddBlog = async (blog) => {
     if (blog.title.length > 0 && blog.author.length > 0 && blog.url.length > 0) {
-      setBlogs(blogs.concat(blog))
+      try {
+        const response = await blogService.create(blog, user?.token)
+        handleNotification(`a new blog ${blog.title} by ${blog.author} added`)
+        setBlogs(blogs.concat(response))
+      } catch (error) {
+        console.log(error.message)
+      }
     }
   }
 
@@ -73,7 +79,7 @@ const App = () => {
         <>
           <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
           <Togglable buttonLabel='Create New Blog'>
-            <NewBlogForm token={user.token} onCreate={handleAddBlog} onNotification={handleNotification} />
+            <NewBlogForm token={user.token} onCreate={handleAddBlog} />
           </Togglable>
         </> :
         <Togglable buttonLabel="Login">
@@ -82,7 +88,7 @@ const App = () => {
       }
       <br />
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} username={user?.username} handleLike={handleLike} handleRemove={() => handleRemove(blog)}/>
+        <Blog key={blog.id} blog={blog} username={user?.username} handleLike={handleLike} handleRemove={() => handleRemove(blog)} />
       )}
     </>
   )
