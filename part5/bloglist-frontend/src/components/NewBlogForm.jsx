@@ -1,31 +1,32 @@
+import { useState } from "react"
+
 const NewBlogForm = ({ onCreate }) => {
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+
   const handleSubmit = async (event) => {
     event.preventDefault()
-    const blog = {
-      title: event.target.title.value,
-      author: event.target.author.value,
-      url: event.target.url.value,
-    }
-    onCreate(blog)
+    await onCreate({ title, author, url })
   }
 
-  return(
+  return (
     <div>
       <h2>create new</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="title">title</label>
-          <input id="title" type="text" />
+          <input id="title" type="text" placeholder="The Title" onChange={(event) => setTitle(event.target.value)} />
         </div>
         <div>
           <label htmlFor="author">author</label>
-          <input id="author" type="text" />
+          <input id="author" type="text" placeholder="John Doe" onChange={(event) => setAuthor(event.target.value)} />
         </div>
         <div>
           <label htmlFor="url">url</label>
-          <input id="url" type="text" />
+          <input id="url" type="text" placeholder="www.books.com" onChange={(event) => setUrl(event.target.value)} />
         </div>
-        <button type="submit">create</button>
+        <button data-testid="createBtn" type="submit">create</button>
       </form>
     </div>
   )
